@@ -10,6 +10,9 @@ s*/instructor_notes.md
 data/bnb_data.db
 data/vectorstore/
 
+#reading docs
+data/documents/readingDocs
+
 # Python bytecode
 __pycache__/
 *.pyc
