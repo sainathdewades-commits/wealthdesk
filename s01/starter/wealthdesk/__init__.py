@@ -6,8 +6,11 @@ This file runs automatically when Python imports the wealthdesk package.
 Use it to set up the environment before any other module loads.
 """
 import os
-
 os.environ.setdefault("HF_HUB_VERBOSITY", "error")
+
+from dotenv import load_dotenv
+load_dotenv()  # load .env file so os.environ["GROQ_API_KEY"] is available to all modules
+
 
 # ---------------------------------------------------------------------------
 # TODO 1 of 5 -- Environment setup
