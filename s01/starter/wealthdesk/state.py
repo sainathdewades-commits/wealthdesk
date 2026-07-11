@@ -26,6 +26,7 @@ from typing import TypedDict
 class WealthDeskState(TypedDict):
     customer_message: str
     response: str
+    history: list[dict]  # Optional: to keep track of conversation history
 
 
 # Guard: raises at import time if the fields haven't been defined yet.

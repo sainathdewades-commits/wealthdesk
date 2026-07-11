@@ -5,6 +5,8 @@ All constants and prompts for WealthDesk.
 Nothing here makes API calls -- it's pure configuration.
 """
 
+from pathlib import Path
+
 # ---------------------------------------------------------------------------
 # Model settings (provided -- no changes needed)
 # ---------------------------------------------------------------------------
@@ -12,6 +14,8 @@ Nothing here makes API calls -- it's pure configuration.
 MODEL_NAME  = "meta-llama/llama-4-scout-17b-16e-instruct"
 TEMPERATURE = 0.3
 MAX_TOKENS  = 300
+DATA_DIR      = Path(__file__).parent.parent.parent.parent / "data"
+CHECKPOINT_DB = DATA_DIR / "checkpoints.db" 
 
 # ---------------------------------------------------------------------------
 # TODO 2 of 5 -- System prompt
