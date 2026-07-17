@@ -45,3 +45,6 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+data/checkpoints.db-sqlite
+data/checkpoints.db-shm

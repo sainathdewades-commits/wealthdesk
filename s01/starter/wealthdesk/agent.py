@@ -10,19 +10,30 @@ Run the agent from the repo root:
 Session 1 graph:
     START --> respond --> END
 """
+
+import sqlite3
+from uuid import uuid4
+
 from langgraph.graph import END, StateGraph
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+
 
 from .nodes import respond
 from .state import WealthDeskState
+from .config import CHECKPOINT_DB
 
 
-def build_graph():
+def build_graph(checkpointer = None):
     # START -> RESPOND -> STOP
     builder = StateGraph(WealthDeskState)
     builder.add_node("respond", respond)
     builder.set_entry_point("respond")
     builder.add_edge("respond", END)
-    return builder.compile()
+    if checkpointer is None:
+        checkpointer = MemorySaver()  # Default to in-memory checkpointing
+    return builder.compile(checkpointer=checkpointer)
 
 # Module-level graph instance required by langgraph.json for LangGraph Studio.
 # run() uses this directly rather than building a second copy.
@@ -34,6 +45,10 @@ graph = build_graph()
 # ---------------------------------------------------------------------------
 
 def run() -> None:
+    conn = sqlite3.connect(str(CHECKPOINT_DB), check_same_thread=False)
+    _graph = build_graph(checkpointer=SqliteSaver(conn))
+    thread_id = str(uuid4())
+    config = {"configurable": {"thread_id": thread_id}}
     print("=" * 55)
     print("  WealthDesk | Bharat National Bank")
     print("  Type 'quit' to exit")
@@ -54,7 +69,7 @@ def run() -> None:
 
         # "response": "" is a placeholder to satisfy the TypedDict contract.
         # respond() overwrites it; graph.invoke() returns the full merged state.
-        result = graph.invoke({"customer_message": user_input, "response": ""})
+        result = _graph.invoke({"customer_message": user_input, "response": ""}, config=config)
         print(f"\nWealthDesk: {result['response']}")
 
 

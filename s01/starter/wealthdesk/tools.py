@@ -10,17 +10,19 @@ that let the agent query live databases.
 import importlib
 import os
 
-try:
-    _groq_module = importlib.import_module("langchain_groq")
-    ChatGroq = _groq_module.ChatGroq
-except ModuleNotFoundError as exc:
-    raise ImportError(
-        "langchain_groq is not installed. Install it with `pip install langchain-groq`."
-    ) from exc
-except AttributeError as exc:
-    raise ImportError(
-        "langchain_groq does not export ChatGroq. Check that the installed package is correct."
-    ) from exc
+from langchain_groq import ChatGroq
+
+# try:
+#     _groq_module = importlib.import_module("langchain_groq")
+#     ChatGroq = _groq_module.ChatGroq
+# except ModuleNotFoundError as exc:
+#     raise ImportError(
+#         "langchain_groq is not installed. Install it with `pip install langchain-groq`."
+#     ) from exc
+# except AttributeError as exc:
+#     raise ImportError(
+#         "langchain_groq does not export ChatGroq. Check that the installed package is correct."
+#     ) from exc
 
 from .config import MAX_TOKENS, MODEL_NAME, TEMPERATURE
 
