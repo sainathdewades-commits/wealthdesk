@@ -24,7 +24,7 @@ from langchain_groq import ChatGroq
 #         "langchain_groq does not export ChatGroq. Check that the installed package is correct."
 #     ) from exc
 
-from .config import MAX_TOKENS, MODEL_NAME, TEMPERATURE
+from .config import MAX_TOKENS, MODEL_NAME, TEMPERATURE, CLSFR_TEMPERATURE, CLSFR_MAX_TOKENS
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:
@@ -40,4 +40,11 @@ llm = ChatGroq(
     model=MODEL_NAME,
     temperature=TEMPERATURE,
     max_tokens=MAX_TOKENS,
+)
+
+classifier_llm = ChatGroq(
+    api_key=GROQ_API_KEY,
+    model=MODEL_NAME,
+    temperature=CLSFR_TEMPERATURE,
+    max_tokens=CLSFR_MAX_TOKENS,
 )

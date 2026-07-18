@@ -12,6 +12,9 @@ class WealthDeskState(TypedDict):
     customer_message: str
     response: str
     history: list[dict]  # Optional: to keep track of conversation history
+    query_type: str
+    retrieved_docs: list[str]
+ 
 
 
 # Guard: raises at import time if the fields haven't been defined yet.
