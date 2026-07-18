@@ -139,11 +139,19 @@ def main() -> None:
     VECTOR_DIR.mkdir(parents=True, exist_ok=True)
 
     print("Building vector store...")
-    # collection_metadata sets the distance metric used by ChromaDB's HNSW index.
-    # "cosine" produces relevance scores in a 0–1 range where higher = more similar,
-    # which is intuitive and maps well to a score threshold like 0.4.
-    # The default ("l2", L2 Euclidean distance) produces much lower scores for the
-    # same queries, making thresholds hard to reason about.
+   # Configure Chroma's HNSW index to use cosine similarity.
+#
+# During retrieval, Chroma compares the query embedding with every stored
+# embedding using this metric. Cosine measures the angle between vectors,
+# making it well-suited for semantic text similarity.
+#
+# This metric becomes part of the HNSW index structure when the collection
+# is created and cannot be changed later. Switching to a different metric
+# (e.g., L2) requires rebuilding the vector store.
+#
+# For the WealthDesk corpus, cosine also produces similarity scores that
+# separate meaningful queries from noise more cleanly, making thresholding
+# (e.g., 0.3) easier to tune.
     Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,

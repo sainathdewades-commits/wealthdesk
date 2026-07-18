@@ -17,19 +17,19 @@ from .config import (
 from .state import WealthDeskState
 from .tools import classifier_llm, llm
 
-vectorstore = None
+vectorstore = None  # shared across calls; initialised once by _init_vectorstore()
 
 
 def _init_vectorstore() -> None:
     """Load ChromaDB + embeddings. No-op if already initialised or mocked."""
     global vectorstore
-    if vectorstore is not None:
+    if vectorstore is not None:  # already loaded — skip the 90 MB model reload
         return
     try:
-        embeddings  = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
+        embeddings  = HuggingFaceEmbeddings(model_name=EMBED_MODEL)  # loads ~90 MB model from ~/.cache/huggingface/
         vectorstore = Chroma(
-            persist_directory=str(VECTORSTORE_DIR),
-            embedding_function=embeddings,
+            persist_directory=str(VECTORSTORE_DIR),  # opens chroma.sqlite3 on disk — does NOT load all chunks into memory
+            embedding_function=embeddings,            # same model used at ingest time — must match or retrieval breaks
         )
     except Exception as e:
         print(f"[WealthDesk] Could not load vectorstore: {e}")
@@ -45,11 +45,11 @@ def classify(state: WealthDeskState) -> dict:
     try:
         result     = classifier_llm.invoke(messages)
         query_type = result.content.strip().upper()
-        if query_type not in {"SIMPLE", "COMPLEX", "OUT_OF_SCOPE"}:
-            query_type = "SIMPLE"
+        if query_type not in {"IN_SCOPE", "OUT_OF_SCOPE"}:
+            query_type = "IN_SCOPE"
     except Exception as e:
         print(f"[WealthDesk] Classification error: {e}")
-        query_type = "SIMPLE"
+        query_type = "IN_SCOPE"
     return {"query_type": query_type, "retrieved_docs": []}
 
 
